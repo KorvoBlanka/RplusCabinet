@@ -1,0 +1,74 @@
+% layout 'default';
+
+% content_for header => begin
+
+<meta name = "description" content = "Страница восстановления пароля." />
+<meta name = "keywords" content = "" />
+<meta name = "robots" content = "noindex,nofollow" />
+
+<style type="text/css">
+  body {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .panel {
+    max-width: 350px;
+  }
+
+  .panel-body {
+    padding: 19px 29px 14px;
+  }
+
+  .alert-sm {
+    padding: 9px;
+  }
+  
+  .panel-default>.panel-heading {
+    color: #333;
+    background-color: #fff;
+    border-color: #fff;
+  }
+</style>
+% end
+
+<div class="container">
+  <div class="panel panel-default center-block">
+    <div class="panel-body">
+      <form class="form-signin">
+        <fieldset>
+          <legend>Введите новый пароль</legend>
+          <div class="alert alert-danger alert-sm alert-notmatch hidden">новый пароль и подтверждение пароля не совпадают</div>
+          <div class="input-group margin-bottom-20">
+            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+            <input type="password" class="form-control" name="new_password" placeholder="новый пароль" required autocomplete="off">
+          </div>
+          <div class="input-group margin-bottom-20">
+            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+            <input type="password" class="form-control" name="confirm_password" placeholder="подтверждение нового пароля" required autocomplete="off">
+          </div>          
+          <button type="submit" class="btn btn-primary pull-right" data-loading-text="загрузка...">Сменить</button>             
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div> <!-- /container -->
+
+% content_for javascript => begin
+<script type="application/javascript">
+  $(function () {    
+    $('.form-signin').submit(function (e) {
+      e.preventDefault();
+      $('.alert-notmatch').addClass('hidden');      
+      var reg_code = '<%= $self->flash('reg_code') %>';
+      var new_password = $('input[name="new_password"]').val();
+      var confirm_password = $('input[name="confirm_password"]').val();
+      if (new_password != confirm_password) {
+        $('.alert-notmatch').removeClass('hidden');
+      } else {
+        window.location.href="/api/account/restore?reg_code=" + reg_code + "&new_password=" + new_password;
+      }
+    });
+  });
+</script>
+% end

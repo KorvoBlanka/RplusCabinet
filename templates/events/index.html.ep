@@ -1,0 +1,13 @@
+% layout 'default';
+
+% use RplusAccounts::Events;
+
+<div class="row">
+  <div class="col-12 col-sm-12 col-lg-12">
+    <div class="jumbotron">
+
+      <p><%= RplusAccounts::Events::getMessage() %></p>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,997 @@
+% layout 'default';
+% use Rplus::Model::Billing;
+% use Rplus::Model::Billing::Manager;
+% use Rplus::Model::Location;
+% use Rplus::Model::Location::Manager;
+
+% content_for header => begin
+
+<meta name = "description" content = "Онлайн сервис RplusMgmt - новый порядок работы риэлтора" />
+<meta name = "keywords" content = "недвижимость, риэлтор, риелтор, агенство, программа, сервис, служба, квартиры, дома, коттеджи, комнаты" />
+<meta name = "robots" content = "index,follow" />
+<meta name="w1-verification" content="112664092580" />
+
+<style>
+  h1 {
+    font: 200% serif;
+  }
+
+  .header {
+    /*position: fixed;*/
+  }
+
+  .module-description {
+    color: #888888;
+    font-size: 10px;
+    font-style:italic
+  }
+
+  .theme-btn > i {
+    color: #fff;
+  }
+
+  .numbers {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .cost_input {
+    width: 53%;
+  }
+
+  .spacer {
+    height: 15px;
+  }
+
+  .spacer-small {
+    height: 5px;
+  }
+
+  .options {
+    padding: 0px;
+    margin-bottom: 5px;
+  }
+
+  .btn-ucounter {
+    border-width: 0px;
+    padding: 0px 8px;
+  }
+
+  .usr-count {
+    color: #000000;
+    font-size: 16px;
+    font-style: normal;
+    width: 40px;
+  }
+
+  .prog-option:hover {
+    color: #888888;
+  }
+  
+  .slide {
+    
+  }
+  
+  .wrapper-s11 {
+    
+    transition: .6s;
+    transition-delay: 1.5s;
+    -webkit-transform: translateX(-100px) translateY(0px) perspective(1000px) rotateY(-25deg) rotateX(3deg);
+  }
+  
+   .wrapper-s11:hover {
+    -webkit-transform: translateX(-35px) translateY(50px) perspective(0px) rotateY(0deg) rotateX(0deg);
+  }
+
+  .wrapper-s12 {
+
+    transition: .6s;
+    transition-delay: 1.5s;    
+    -webkit-transform: translateX(100px) translateY(0px) perspective(1000px) rotateY(25deg) rotateX(3deg);
+  }
+  
+  .wrapper-s12:hover {
+    -webkit-transform: translateX(35px) translateY(50px) perspective(0px) rotateY(0deg) rotateX(0deg);
+  }
+
+  .wrapper-s13 {
+    transition: .6s;
+    transition-delay: 1.5s;
+    -webkit-transform: translateX(-100px) translateY(0px) perspective(1000px) rotateY(-25deg) rotateX(3deg);
+
+  }
+  
+  .wrapper-s13:hover {
+    -webkit-transform: translateX(-35px) translateY(50px) perspective(0px) rotateY(0deg) rotateX(0deg);
+  }  
+  
+  .wrapper-s14 {
+    transition: .6s;
+    transition-delay: 1.5s;
+    -webkit-transform: translateX(140px) translateY(0px) perspective(1000px) rotateY(0deg) rotateX(33deg);
+  }
+  
+  .wrapper-s14:hover {
+    -webkit-transform: translateX(100px) translateY(50px) perspective(0px) rotateY(0deg) rotateX(0deg);
+  }  
+
+  .tumb-img {
+    width:100%;
+    height: auto;
+  }
+  
+  .promo-img {
+    /*width:100%;*/
+    height: auto;
+    width: 90%;
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+  
+  .promo-block-left {
+    width: 85%;
+    margin-left: auto;
+    margin-bottom: 100px;
+  }
+
+  .promo-block-right {
+    width: 85%;
+    margin-right: auto;
+    margin-bottom: 100px;
+  }
+  
+  #fullPage-nav, .fullPage-slidesNav {
+    -webkit-transform: translateZ(1000px);
+  }
+   
+  #fullPage-nav a span, .fullPage-slidesNav a span {
+    border: 1px solid #CFCFCF !important;
+    background-color: #ffffff !important;
+    -webkit-border-radius: 50% !important;
+    -moz-border-radius: 50% !important;
+    border-radius: 50% !important;
+  } 
+   
+  #fullPage-nav a.active span, .fullPage-slidesNav a.active span {
+    top: 0px !important;
+    left: 0px !important;
+    width: 12px !important;
+    height: 12px !important;
+    /*border: 1px solid #0da3e2 !important;*/
+    border: 1px solid #0da3e2 !important;
+    background-color: rgba(0,0,0,0) !important;
+  }  
+  
+  .navbar {
+    -webkit-transform: translateZ(1000px);
+  }
+  
+  .controlArrow {
+    
+    width: 500px !important;
+    height: 500px !important;    
+    
+    transition: .6s;
+    opacity: 0;
+    
+    -webkit-transform: translateZ(1000px);
+    border-width: 0px !important;
+    margin-top: 0px !important;
+    top: 50%;
+    margin-top: -250px !important;
+  }
+  
+  .controlArrow.next {
+    right: 60px !important;
+    background: url(assets/img/aux/paddle_next.png) no-Repeat right 50%;
+  }
+  
+  .controlArrow.prev {
+    left: 60px !important;
+    background: url(assets/img/aux/paddle_prev.png) no-Repeat left 50%;
+  }
+  
+  .tableCell {
+    display: block !important;
+    /*margin-top: 55px;*/
+  }
+  
+  .promo-img-wrapper {
+    -webkit-transition: all .2s ease-in-out;
+  }
+  
+  .promo-img-wrapper:hover {
+    -webkit-transform: scale(1.05);
+  }
+  
+  .img-wrapper {
+    -webkit-transition: all .2s ease-in-out;
+    padding: 0px;
+    padding-right: 2px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  .img-wrapper:hover {
+    -webkit-transform: scale(1.02);
+  }
+
+  #section0 {
+    background: url(assets/img/bg/bg_main-1.jpg) no-repeat; 
+    background-size: 120%;
+    background-position: center center;
+  }
+
+  #section1 {
+    background: url(assets/img/bg/bg_manager.jpg) no-repeat;
+    background-size: 120%; 
+    background-position: center center;
+  }
+
+  #section2 {
+    background: url(assets/img/bg/bg_openspace-1.jpg) no-repeat;
+    background-size: 120%; 
+    background-position: center center;
+  }
+  
+  #section3 {
+    background: url(assets/img/bg/bg_city.jpg) no-repeat; 
+    background-size: 120%; 
+    background-position: center center;
+  }
+
+  .section {
+    margin-bottom: 0px;
+  }
+
+  .section-caption {
+    text-align: center;
+    font-size: 29px;
+    color: #fff;
+  }
+
+  .content-wrapper {
+    display: table;
+    height: 100%;
+  }
+
+  .content {
+    display: table-cell;
+    vertical-align: middle; 
+  }
+
+  .content-66 {
+    display: table-cell;
+    vertical-align: middle; 
+    width: 66%;
+  }
+
+  .content-33 {
+    display: table-cell;
+    vertical-align: middle;
+    width: 33%;
+  }
+
+  .not-selectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .promo-header-white {
+    font-size: 29px;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .promo-text-white {
+    font-size: 20px;
+    text-align: left;
+    color: #f1f1f1;
+  }
+
+  .promo-footer-white {
+    text-align: center;
+    font-size: 21px;
+    color: #fff;
+  }
+
+  .promo-header-black {
+    font-size: 29px;
+    text-align: center;
+    color: #000;
+  }
+  
+  .promo-text-black {
+    font-size: 20px;
+    text-align: left;
+    color: #2c2c2c;
+  }
+
+  .promo-footer-black {
+    text-align: center;
+    font-size: 21px;
+    color: #000;
+  }
+
+  .promo-link {
+    text-align: center;
+    font-size: 22px;
+    text-decoration: none !important;
+    cursor: pointer;
+    color: #428bca;
+  }
+
+  .promo-link:hover {
+    color: #0da3e2;
+  }
+
+  .round-button {
+    display: block;
+    width: 120px;
+    height: 120px;
+    line-height: 100px;
+    border: 0px solid #f5f5f5;
+    border-radius: 50% !important;
+    color: #f5f5f5;
+    text-align: center;
+    text-decoration: none;
+    background: #464646;
+    box-shadow: 0 0 3px gray;
+    cursor: pointer;
+  }
+
+  .start-button {
+    -webkit-transition: all .1s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -60px;
+    margin-top: -235px;
+    z-index: 100;
+    background: url(assets/img/aux/start_btn_1.png);
+    background-size: contain;
+  }
+
+  .start-button-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -80px;
+    margin-top: -105px;
+    z-index: 100;
+    width: 160px;
+    text-align: center;
+  }
+
+  .inset-text {
+      /* Shadows are visible under slightly transparent text color */
+      color: rgba(48,48,48,1);
+      text-shadow: 0.5px 0.5px 0.5px rgba(140,140,140,0.6) , -0.5px -0.5px 0.5px rgba(0,0,0,0.67);
+  }
+
+  .start-button:hover {
+    background: url(assets/img/aux/start_btn_1_hover_2.png);
+    background-size: contain;
+  }
+
+  .start-button:active {
+    background: url(assets/img/aux/start_btn_1_hover_1.png);
+    background-size: contain;
+    -webkit-transform: scale(0.99);
+  }
+
+  .select-clutch {
+    -webkit-transform: translateX(1px) translateY(1px);
+  }
+</style>
+<link rel="stylesheet" href="assets/plugins/fullPage/jquery.fullPage.css" media="screen">
+% end
+
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+  <div id="fullpage">
+    <div class="section" id="section00" style="background: url(assets/img/bg/texture_20.png), url(assets/img/bg/gradient_black.png); background-size: 160px,20px 100%;">
+
+      <div class="round-button start-button" data-action="account-reg" style="" >
+      </div>
+      <div class="start-button-text" style="" >
+        <span class="inset-text" style="font-size: 26px;">Регистрация</span>
+      </div>
+
+
+      <div class="row content-wrapper" style="background-color: rgba(0,0,0,0.24); width: 101%;"> 
+          <div class="content">
+            <p class="section-caption" style="margin-left: 150px; margin-right: 150px; font-size: 44px;">
+              <b style="color: #00669C;">Rplus</b><b style=" color: #929292;">Mgmt</b> - новый порядок работы риэлтора
+            </p>
+
+            <p class="section-caption" style="margin-left: 50px; margin-right: 50px;">
+              Создан для работы современного риэлтора, и даёт вам больше возможностей, чем вы могли представить...
+            </p>
+          </div>
+      </div>
+      
+      <div class="row" style="position: relative;">
+        <div style="position: absolute; bottom: 25px; margin-top: 0px; padding-left: 14px; padding-right: 14px; background-color: rgba(255,255,255,1.0); width: 100.5%;">
+          <div class="col-sm-3 col-md-3 col-lg-3" style="padding: 0px;">
+            <div class="img-wrapper">
+              <a href="#s2">
+                <img class="tumb-img" src="assets/img/tumb/tumb_1.jpg">
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-3 col-md-3 col-lg-3" style="padding: 0px;">
+            <div class="img-wrapper">
+              <a href="#s3">
+                <img class="tumb-img" src="assets/img/tumb/tumb_2.jpg">
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-3 col-md-3 col-lg-3" style="padding: 0px;">
+            <div class="img-wrapper">
+              <a href="#s4">
+                <img class="tumb-img" src="assets/img/tumb/tumb_3.jpg">
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-3 col-md-3 col-lg-3" style="padding: 0px;">
+            <div class="img-wrapper">
+              <a href="#5">
+                <img class="tumb-img" src="assets/img/tumb/tumb_4.jpg">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+ 
+    <!-- блок недвижимости -->
+    <div class="section" id="section1">
+
+      <div class="slide" style="background-color: rgba(255,255,255,0.15);">
+        <div class="row content-wrapper">
+          <div class="content" style="width: 50%; padding-left: 60px;">
+            <p class="section-caption" style="margin-left: 50px; margin-right: 50px; font-size: 42px; color: #000;">
+              Сверхширокие возможности.
+            </p>
+            <p class="section-caption" style="color: #555;">
+              Использование программы дает понимаение превосходства.
+              Модуль недвижимости - загрузка предложений по аренде и продаже в реальном времени, отображение в удобном вам виде, управление объектами...
+            </p>
+            <p class="section-caption" style="color: #000;">
+              RplusMgmt дает вам больше возможностей чем вы могли представить.
+            </p>
+            <p class="section-caption">
+              <a class="promo-link" href="/aboutprogram?sc=3&n=1">подробнее...</a>
+            </p>
+          </div>
+          <div class="content" style="width: 50%; padding-top: 30px; padding-left: 30px;">
+            <img class="promo-img" style="width: 90%; " src="assets/img/big/imac_0.png">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="wrapper-s12 content-66">
+            <img class="promo-img" style="width: 90%; margin-right: 5%; margin-left: 5%" src="assets/img/slide/s11.png">
+          </div>        
+          <div class="content-33">
+            <div class="promo-block-right">
+              <p class="promo-header-black">
+                Вам больше не нужно искать, все уже здесь.
+              </p>
+              <p class="promo-text-black">
+                Слишком много информации не бывает.
+                Загрузка предложений из всех источников в реальном времени. Недвижимость от собственников, от посредников, дома, квартиры, коттеджи...
+              </p>
+              <p class="promo-footer-black">
+                Доступно все, выбирайте что нужно.
+              </p>            
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="content-33">
+            <div class="promo-block-left">
+              <p class="promo-header-black">
+                Без инструментов не обойтись.
+              </p>
+              <p class="promo-text-black">
+                В вашем распоряжении все необходимое для работы -
+                мощная система поиска, сортировки и фильтров, настраиваемая рабочая таблица, контекстное меню...
+              </p>
+              <p class="promo-footer-black">
+                Это означает что у вас еще больше возможностей с RplusMgmt.
+              </p>
+            </div>
+          </div>
+          <div class="wrapper-s11 content-66">
+            <img class="promo-img" src="assets/img/slide/s12.png">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="wrapper-s12 content-66">
+            <img class="promo-img" src="assets/img/slide/s13.png">
+          </div>
+          <div class="content-33">
+            <div class="promo-block-right">
+              <p class="promo-header-black">
+                Работать легко.
+              </p>
+              <p class="promo-text-black">
+                Любая задача, будь-то формирование файла для подачи рекламы, добавление объекта, 
+                внесение телефона в список посредников или поиск по сложному запросу, может быть выполнена одним движением.
+              </p>
+              <p class="promo-footer-black">
+                Начните работать и через несколько секунд вы всё поймиете сами.
+              </p>
+            </div>
+          </div>
+        </div> 
+      </div>
+
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="content-33">
+            <div class="promo-block-left">
+              <p class="promo-header-black">
+                Больше информации
+              </p>
+              <p class="promo-text-black">
+                Без возможности просмотра фотографий и отображения объекта на карте, представление об объекте было бы не полным.
+              </p>
+              <p class="promo-footer-black">
+                Теперь вам видно все.
+              </p>            
+            </div>
+          </div>
+          <div class="wrapper-s13 content-66">
+            <img class="promo-img" src="assets/img/slide/s14.png">
+          </div>
+        </div>
+      </div>
+    </div> 
+    
+    
+    <!-- диспетчерский блок -->
+    <div class="section" id="section2">
+      <div class="slide" style="background-color: rgba(0,0,0,0.28);">
+          <div class="row content-wrapper">
+            <div class="content" style="width: 50%; padding-left: 60px;">
+              <p class="section-caption" style="margin-left: 50px; margin-right: 50px; font-size: 42px;">
+                Звонок. С него все начинается.
+              </p>
+              <p class="section-caption" style="">
+                Call-центр позволяет находить варианты по запросу клиента, регистрировать клиента и подписывать его на SMS рассылку.
+              </p>
+              <p class="section-caption">
+                <a class="promo-link" href="/aboutprogram?sc=2&n=1">подробнее...</a>
+              </p>
+            </div>
+            <div class="content" style="width: 50%;">
+              <img class="promo-img" style="width: 85%; padding-top: 60px;" src="assets/img/big/headset_0.png">
+            </div>
+          </div>
+      </div>
+    
+      <div class="slide" style="background-color: rgba(0,0,0,0.28);">
+        <div class="row content-wrapper">
+          <div class="content-33" style="color: #fff;">
+            <div class="promo-block-left" style="margin-top: 10%">
+              <p class="promo-header-white">
+                Поиск предложений по запросу клиента стал еще удобнее
+              </p>
+              <p class="promo-text-white"> 
+                Начните вводить запрос и вы увидите как быстро программа найдет то, что вы ищите.
+                Система поиска позволяет искать объекты по любым параметрам, от адреса и района до этажа и площади,
+                а автодополнение всегда поможет вам.
+              </p>
+              <p class="promo-footer-white">
+              </p>
+            </div>
+          </div>
+          <div class="wrapper-s11 content-66">
+            <img class="promo-img" src="assets/img/slide/s21.png">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide" style="background-color: rgba(0,0,0,0.28);">
+        <div class="row content-wrapper">
+          <div class="wrapper-s14 content-66">
+            <img class="promo-img" style="width: 85%;" src="assets/img/slide/s22.png">
+          </div>
+          <div class="content-33" style="color: #fff;">
+            <div class="promo-block-right" style="margin-bottom: 200px; color: #fff;">
+              <p class="promo-header-white">
+                Широкий взгляд на поиск.
+              </p>
+              <p class="promo-text-white">
+                Все найденные варианты будут отображены на карте,
+                расскажите клиенту подробнее о месторасположении объекта и окружающей его инфраструктуре.
+              </p>
+              <p class="promo-footer-white">
+                Вы не сможете предложить меньше того, что есть.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>      
+
+      <div class="slide" style="background-color: rgba(0,0,0,0.28);">
+        <div class="row content-wrapper">
+          <div class="content-33" style="color: #fff;">
+            <div class="promo-block-left">
+              <p class="promo-header-white">
+                Еще больше причин общаться.
+              </p>
+              <p class="promo-text-white">
+                Персонализируйте работу с клиентом, внеся его данные в карточку.
+                При повторном обращении этого клиента вы увидите информацию о нем, предложенные варианты, сможете отредактировать запросы или создать новые.
+                Ваше общение не закончится одним звонком.
+              </p>
+              <p class="promo-footer-white">
+              </p>              
+            </div>
+          </div>
+          <div class="wrapper-s13 content-66">
+            <img class="promo-img" src="assets/img/slide/s23.png">
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide" style="background-color: rgba(0,0,0,0.28);">
+        <div class="row content-wrapper">
+          <div class="wrapper-s12 content-66">
+            <img class="promo-img" src="assets/img/slide/s24.png">
+          </div>        
+          <div class="content-33" style="color: #fff;">
+            <div class="promo-block-right" style="margin-top: 10%;">
+              <p class="promo-header-white">
+                Внесите заявку и объект сам найдет клиента
+              </p>
+              <p class="promo-text-white">
+                Вам больше не нужно подбирать варианты вручную.
+                Внесите запрос клиента в SMS рассылку и тогда в течении двух недель программа будет автоматически отправлять SMS сообщения о подходящих вариантах. 
+               </p>
+              <p class="promo-footer-white">
+              </p>               
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- клиентский блок -->
+    <div class="section" id="section3">
+      <div class="slide" style="background-color: rgba(255,255,255,0.0);">
+        <div class="row content-wrapper">
+          <div class="content" style="width: 55%;">
+            <p class="section-caption" style="margin-left: 75px; margin-right: 75px; font-size: 42px;">
+              Мобильность риэлтора. Её роль становится заметнее.
+            </p>
+            <p class="section-caption" style="margin-left: 50px; margin-right: 50px;">
+              Использование мобильного устройства экономит время и дает дает вам больше возможностей. 
+              Прибавьте к этому целый набор интелектуальных и эффективных функций RplusMgmt - и в ваших 
+              руках невероятно мощный инструмент современного риэлтора.
+            </p>
+            <p class="section-caption" style="">
+              Мобильность - это значит быстро.
+            </p>
+            <p class="section-caption">
+              <a class="promo-link" href="/aboutprogram?sc=4&n=1">подробнее...</a>
+            </p>            
+          </div>
+          <div class="content" style="width: 45%; padding-right: 50px;">
+            <img class="promo-img" src="assets/img/big/ipad-air.png">
+          </div>  
+        </div>
+      </div>
+      
+
+      <div class="slide" >
+        <div class="row content-wrapper">
+          <div class="content-33">
+            <div class="promo-block-left" style="color: #fff;">
+              <p class="promo-header-white">
+                Работа в офисе или вне. Разницы нет.
+              </p>
+              <p class="promo-text-white">
+                Где бы вы ни были. Работайте на компьютере, ноутбуке или планшете, в офисе, дома или сидя в кафе,  
+                вы не почувствуете разницы. RplusMgmt одинаково комфортно позволяет работать на всех ваших устройствах. 
+                И везде весь функционал будет вам доступен.
+              </p>
+              <p class="promo-footer-white">
+                Весь функционал на всех ваших устройствах.
+              </p>
+            </div>
+          </div>
+          <div class="wrapper-s11 content-66">
+            <img class="promo-img" src="assets/img/slide/s31.png">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide" >
+        <div class="row content-wrapper">
+          <div class="wrapper-s12 content-66">
+            <img class="promo-img" src="assets/img/slide/s32.png">
+          </div>        
+          <div class="content-33">
+            <div class="promo-block-right" style="color: #fff;">
+              <p class="promo-header-white">
+                Огромное внимание к каждой детали.
+              </p>
+              <p class="promo-text-white">
+                Внося данные по обьекту, подробнее заполняйте карточку, не упускайте детали.  
+                Заполните адрес и программа определит местоположение обьекта на карте, 
+                а в “дополнительном описании” отразите его индивидуальные особенности. 
+                Сфотографируйте и добавьте фото, выберите рекламные издания, и нажмите Готово. 
+                Обьект уже в базе, его уже предлагают, им уже интересуются…
+              </p>
+              <p class="promo-footer-white">
+                Маленьким деталям - большое значение.
+              </p>            
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="content-33">
+            <div class="promo-block-left" style="color: #fff;">
+              <p class="promo-header-white">
+                Презентации на показ.
+              </p>
+              <p class="promo-text-white">
+                Начните с выбора  обьектов под запрос,  демонстрируйте их фото,  
+                показывайте расположение  на карте города, зачитывайте подробное описание, 
+                подчеркните их ключевые  моменты и отмечайте понраввшиеся. Теперь вам остается  
+                только договариться  о встрече.  А для особенных покупателей-формируйте новый 
+                запрос на поиск,  RplusMgmt  будет подбирать нужные варианты в течении двух недель.  
+                Система дополнена функцией SMS уведомления.  Если, что-то вы сразу же узнаете. 
+              </p>
+              <p class="promo-footer-white">
+                Внимание клиента захвачено. Без остатка.
+              </p>
+            </div>
+          </div>
+          <div class="wrapper-s13 content-66">
+            <img class="promo-img" src="assets/img/slide/s33.png">
+          </div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="row content-wrapper">
+          <div class="wrapper-s12 content" style="width:66%;">
+            <img class="promo-img" src="assets/img/slide/s34.png">
+          </div>      
+          <div class="content" style="width: 33%;">
+            <div class="promo-block-right" style="color: #fff;">
+              <p class="promo-header-white">
+                Переговоры ведете вы. А на заднем плане работает ваш помошник RplusMgmt.
+              </p>
+              <p class="promo-text-white">
+                Используйте свои мобильные преимущества в переговорах. 
+                Обсуждаете ли цену, тенденцию рынка или альтернативные обьекты. 
+                Недвижимость всего города перед вами, смотрите цены, 
+                используйте возможность показа расположения  обьектов  на карте, 
+                при наличии фотографий покажите их тоже, сравнивайте, выбирайте.  
+                Ведя переговоры используйте весь функционал. У вас есть ответы на все вопросы.
+              </p>
+              <p class="promo-footer-white">
+                Вы всегда на шаг впереди.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>      
+
+    </div>
+    
+    <div class="section" style="background-color: #f1f1f1;">
+      
+      <div class="container">
+      
+        <div class="row service-box margin-bottom-40" style="margin-top: 80px">
+          <div class="col-md-4 col-sm-4">
+            <div class="service-box-heading" style="background: url(assets/img/bg/bg_b1.jpg) no-repeat; background-position: 50% 50%; background-size: 100%;">
+              <img class="promo-img" src="assets/img/big/imac_0.png" style="width: 60%; height: auto; margin: 0 20% 0 20%;">
+            </div>
+              <h3>RplusMgmt</h3>
+              Сервис, позволяющий автоматизировать работу частного риэлтора или агенства по аренде, продаже недвижимости, выполнять учет всех видов и аспектов риэлторской деятельности.            
+            <ul>
+              <li>Автоматическая загрузка объявления из различных источников в вашу базу</li>
+              <li>Выбор типа недвижимости для загрузки</li>
+              <li>Добавление, редактирование и удаление объектов недвижимости</li>
+              <li>Отслеживание повторяющихся объявлений и обновление информации об объекте</li>
+              <li>Проверка на посредников, предложения от посредников будут помечены</li>
+              <li>Постоянное обновление базы посредников</li>
+              <li>Добавление посредника в базу одним кликом</li>
+              <li>Широкие и гибкие возможности поиска, сортировки, фильтрации, группирования и отбора объектов недвижимости</li>
+              <li>Цветовые метки - отметьте заинтересовавший вас объект и вы всега легко сможете его найти</li>
+              <li>Формирование файлов для подачи рекламы - отметьте нужные предложение и программа сама сформирует файл, готовый для подачи рекламы</li>
+            </ul>
+          </div>
+          <div class="col-md-4 col-sm-4">
+            <div class="service-box-heading" style="background: url(assets/img/bg/bg_b2.jpg) no-repeat; background-position: 50% 50%; background-size: 100%;">
+              <img class="promo-img" src="assets/img/big/headset_0.png" style="width: 60%; height: auto; margin: 0 20% 0 20%;">
+            </div>
+              <h3>Call-центр</h3>
+              Организуйте работу Call-центр, принимайте звонки - остальное сделает RplusMgmt.            
+            <ul>
+              <li>Принимайте и вностите заявки в карточку клиента, программа сама подберет подходящие варианты</li>
+              <li>IP-телефония - принимайте звонки прямо в программе</li>
+              <li>Рассылка СМС уведомлений, если не удалось сразу подобрать вариант для клиента, внесите его в СМС рассылку и как только подходящий вариант появится в вашей базе клиент получит смс сообщение</li>
+            </ul>
+          </div>
+          <div class="col-md-4 col-sm-4">
+            <div class="service-box-heading" style="background: url(assets/img/bg/bg_b3.jpg) no-repeat; background-position: 50% 50%; background-size: 100%;">
+              <img class="promo-img" src="assets/img/big/ipad-air_0.png" style="width: 60%; height: auto; margin: 0 20% 0 20%;">
+            </div>
+              <h3>Без ограничений и условий</h3>
+              RplusMgmt разработан в соответствии с моделью SaaS (англ. software as a service — программное обеспечение как услуга),
+              Где бы вы ни находились, какое бы устройство не было у вас под рукой - вы всегда сможете получить доступ к своей копии программы.            
+            <ul>
+              <li>Не требует установки - для работы нужен лишь браузер и соединение с интернетом</li>
+              <li>Не требует настройки или специальных знаний для использования</li>
+              <li>Не нужно заботься о работоспособности вашей программы, обновлениях и защите данных</li>
+              <li>Работайте на любом компьютере, ноутбуке или планшете, там где хотите и когда хотите.</li>
+              <li>Работайте индивидуально или коллективно - в любом месте с любого устройства вам будет доступна вся ваша база недвижимости</li>
+              <li>Вы платите только за то, что вам нужно</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="container">
+        <h3>Стоимость и условия использования</h3>
+        <p>Для ознакомления с сервисом вы можете использовать <a data-action="show-demo" style="cursor: pointer;">демонстрационную версию</a>.</p>
+        <p>Для пользования программой RplusMgmt вам необходимо преобрести подписку. Базовая стоимость - 40 рублей в день. <a href="/aboutprogram?sc=7&n=1">Подробнее...</a></p>
+        <span class="input-group-btn">
+          <button class="btn blue" type="button" data-action="account-reg">РЕГИСТРАЦИЯ</button>
+        </span>
+        <div style="margin-bottom: 35px;">
+        </div>
+      </div>
+      
+      <!-- BEGIN FOOTER -->
+      <div class="footer" style="padding: 0; background: url(http://images.apple.com/v/iphone-5s/a/images/texture_20.png), url(http://images.apple.com/v/iphone-5s/a/images/gradient_black.png); background-size: 160px,20px 100%;">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4 col-sm-4 space-mobile">
+            <!-- BEGIN ABOUT -->
+            <h2>О нас</h2>
+              <p class="margin-bottom-30">Наша задача - внедрение передовых информационных технологий и стандартов в сферу риэлторского бизнеса, сочетая многолетний опыт работы и инновационный подход. Мы работаем для вас.</p>
+              <!-- begin WebMoney Transfer : attestation label --> 
+              <!-- end WebMoney Transfer : attestation label -->
+              <div class="clearfix"></div>
+            <!-- END ABOUT -->
+            </div>
+            <div class="col-md-4 col-sm-4 space-mobile">
+            <!-- BEGIN CONTACTS -->
+              <h2>Контакты</h2>
+              <address class="margin-bottom-40">
+                RplusMgmt <br />
+                Хабаровск, Дзержинского 65, офис 1410 <br/>
+                 <br/>
+                <span>Телефон: </span>+7(4212)94-00-59<br/>
+                <span style="visibility: hidden;">Телефон: </span>+7(924)404-00-59<br/>
+                <br/>
+                Email: <a href="mailto:info@rplusmgmt.com">info@rplusmgmt.com</a><br/>
+                Мы <a href="http://vk.com/club70168727" target="_blank"> Вконтакте</a><br/>
+                Наш <a href="skype:rplusmgmt.com?chat">Skype</a>
+              </address>
+            <!-- END CONTACTS --> 
+            </div>
+              <div class="col-md-4 col-sm-4 space-mobile">
+                <h2>Аттестат</h2>
+                <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=795098402531" target=_blank>
+                  <img src="assets/img/88x31_wm_v_blue_on_white_ru.png" title="Здесь находится аттестат нашего WM идентификатора 795098402531" border="0">
+                  <br>
+                  <font size=1>Проверить аттестат</font>
+                </a>
+              </div>
+            </div>
+          </div>
+            <div class="row">
+              <div class="container">
+                <p>
+                  <span>RplusMgmt © 2014</span> 
+                </p>
+              </div>
+            </div>          
+        </div>
+        <!-- END FOOTER -->
+    </div>
+    
+  </div>     
+</div>
+<!-- END PAGE CONTAINER -->
+
+% content_for javascript => begin
+<script src="assets/plugins/fullPage/jquery.fullPage.js"></script>
+<script src="assets/plugins/fullPage/vendors/jquery.slimscroll.min.js"></script>
+<script src="assets/plugins/fullPage/vendors/jquery.easings.min.js"></script>
+
+<script type="text/javascript">
+  (function() {
+    window.onload = function() {}
+
+    $(document).ready(function() {
+      $('#fullpage').fullpage({
+        verticalCentered: true,
+        resize : true,
+        anchors:['s1', 's2', 's3', 's4', 's5'],
+        scrollingSpeed: 500,
+        easing: 'easeInQuart',
+        menu: false,
+        navigation: true,
+        navigationPosition: 'right',
+        slidesNavigation: true,
+        slidesNavPosition: 'bottom',
+        loopBottom: false,
+        loopTop: false,
+        loopHorizontal: true,
+        autoScrolling: true,
+        scrollOverflow: true,
+        css3: false,
+        paddingTop: '0em',
+        paddingBottom: '0px',
+        keyboardScrolling: true,
+        touchSensitivity: 15,
+        continuousVertical: false,
+        animateAnchor: true,
+
+        //events
+        onLeave: function(index, nextIndex, direction){},
+        afterLoad: function(anchorLink, index){},
+        afterRender: function(){},
+        afterResize: function(){},
+        afterSlideLoad: function(anchorLink, index, slideAnchor, slideIndex){
+
+        },
+        onSlideLeave: function(anchorLink, index, slideIndex, direction){},
+      });
+
+      $('.controlArrow').hover(
+        function () {
+          $('.controlArrow').css('opacity', 1);
+        },
+        function () {
+          $('.controlArrow').css('opacity', 0);
+        }        
+      );
+    });
+
+    % if ($self->flash('show_message') && $self->flash('show_message') == 1) {
+      bootbox.dialog({message: '<%=b($self->flash('message'))%>',
+        title: '<%=$self->flash('title')%>',
+        buttons: {
+          main: {
+            label: "Закрыть",
+            className: "btn-primary",
+          }
+        }
+      });
+    % }
+
+  })();
+</script>
+% end
