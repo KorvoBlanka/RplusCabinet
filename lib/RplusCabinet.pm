@@ -7,12 +7,12 @@ sub startup {
 
   # Plugins
   $self->plugin('Config' => {file => 'app.conf'});
-  
+
   # Router
   my $r = $self->routes;
-   
+
   # API namespace
-  $r->route('/api/:controller')->bridge->to(cb => sub {
+  $r->route('/api/:controller')->under->to(cb => sub {
       my $self = shift;
       return 1;
   })->route('/:action')->to(namespace => 'RplusCabinet::Controller::API');
@@ -23,11 +23,11 @@ sub startup {
       # Authentication
       $r2->post('/signin')->to('authentication#signin');
       $r2->get('/signout')->to('authentication#signout');
-      
+
       # auth protected controllers
-      my $r2b = $r2->bridge->to(controller => 'authentication', action => 'auth');
+      my $r2b = $r2->under->to(controller => 'authentication', action => 'auth');
       $r2b->get('/cabinet')->to(controller => 'cabinet', action => 'index');
-      
+
       # Main controller
       $r2->get('/')->to(controller => 'main', action => 'index');
       # Other controllers

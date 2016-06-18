@@ -12,9 +12,9 @@ __PACKAGE__->register_db(
     driver   => 'Pg',
     database => 'rplus_acc_dev',
     host     => '127.0.0.1',
-    port     => 5433,
+    port     => 5432,
     username => 'raven',
-    password => 'raven!12345',
+    password => 'PfBvgthfnjhf111',
     schema   => 'public',
     connect_options => {
         AutoCommit => 1,
