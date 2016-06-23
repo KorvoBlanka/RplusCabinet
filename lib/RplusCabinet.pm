@@ -8,6 +8,12 @@ sub startup {
   # Plugins
   $self->plugin('Config' => {file => 'app.conf'});
 
+  #
+  $self->hook(before_routes => sub {
+      my $c = shift;
+      say 'before_routes';
+  });
+
   # Router
   my $r = $self->routes;
 
@@ -32,6 +38,7 @@ sub startup {
       $r2->get('/')->to(controller => 'main', action => 'index');
       # Other controllers
       $r2->get('/:controller/:action')->to(action => 'index');
+
   }
 }
 

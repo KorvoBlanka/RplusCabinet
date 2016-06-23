@@ -10,6 +10,8 @@ use Data::Dumper;
 sub auth {
     my $self = shift;
 
+    say 'auth';
+
     return 1 if $self->session('user') && $self->session('user')->{'id'};
 
     $self->render(template => 'authentication/signin');
@@ -32,7 +34,7 @@ sub signin {
         id => $user->id,
         login => $user->email,
     };
-    
+
     if ($remember_me) {
         $self->session(expiration => 604800);
     } else {
