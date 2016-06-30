@@ -11,22 +11,15 @@ use Rplus::Model::Event::Manager;
 
 use JSON;
 use MIME::Lite;
-#use MIME::Lite::TT::HTML;
 use Net::SMTP::SSL;
+use DateTime;
+use DateTime::Format::Strptime;
 
-use Mojo::IOLoop;
 
-
-my $host = 'smtp.yandex.ru';
-my $mail = 'info@rplusmgmt.com';
-
-my $user = 'info@rplusmgmt.com';
-my $pass = 'DU21071969';
-my $port = 465;
-
+my $parser = DateTime::Format::Strptime->new(pattern => '%Y-%m-%d %H:%M:%S');
 my $ua = Mojo::UserAgent->new;
 
-sub log_event {
+sub _log_event {
     my $text = shift;
     my $account = shift;
     my $event = Rplus::Model::Event->new;
@@ -35,12 +28,13 @@ sub log_event {
     $event->save(insert => 1);
 }
 
-sub send_email {
+sub _send_email {
     my $to = shift;
     my $subject = shift;
     my $message = shift;
+    my $config = shift;
 
-    my $from = 'info@rplusmgmt.com';
+    my $from = $config->{'user'};
 
     my $msg = MIME::Lite->new(
                    From     => $from,
@@ -51,18 +45,19 @@ sub send_email {
     $msg->attr("content-type" => "text/html; charset=UTF-8");
     #$msg->send('smtp', 'smtp.yandex.ru', AuthUser=>'info@rplusmgmt.com', AuthPass=>'ckj;ysqgfhjkm', Port => 587);
 
-    my $smtp = Net::SMTP::SSL->new($host, Port => $port) or say "Can't connect";
-    $smtp->auth($user, $pass) or say "Can't authenticate:".$smtp->message();
-    $smtp->mail($mail) or say "Error:".$smtp->message();
-    $smtp->to($to) or say "Error:".$smtp->message();
-    $smtp->data() or say "Error:".$smtp->message();
-    $smtp->datasend($msg->as_string) or say "Error:".$smtp->message();
-    $smtp->dataend() or say "Error:".$smtp->message();
-    $smtp->quit() or say "Error:".$smtp->message();
-
+    my $smtp = Net::SMTP::SSL->new($config->{'host'}, Port => $config->{'port'});
+    if ($smtp) {
+      $smtp->auth($config->{'user'}, $config->{'pass'});
+      $smtp->mail($config->{'user'});
+      $smtp->to($to);
+      $smtp->data();
+      $smtp->datasend($msg->as_string) or say "Error:".$smtp->message();
+      $smtp->dataend();
+      $smtp->quit();
+    }
 }
 
-sub generate_code {
+sub _generate_code {
     my @chars = ("A".."Z", "a".."z", "0".."9");
     my $reg_code;
     $reg_code .= $chars[rand @chars] for 1..20;
@@ -89,45 +84,31 @@ sub get_by_name {
     return $self->render(json => {status => 'ok', data => $res});
 }
 
-sub set_user_count {
-    my $self = shift;
-    my $id = $self->param('id');
-    my $user_count = $self->param('user_count');
+sub update {
+  my $self = shift;
+  my $id = $self->param('id');
+  my $mode = $self->param('mode');
+  my $user_count = $self->param('user_count');
 
-    my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $id, del_date => undef])->[0];
-    $account->user_count($user_count);
-    $account->save(changes_only => 1);
+  my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $id, del_date => undef])->[0];
 
-    return $self->render(json => {status => 'ok'});
+  my $lc = $account->last_changes;
+  if ($lc) {
+    my $now = DateTime->now( time_zone => 'local' )->set_time_zone('floating');;
+
+    my $delta = $now->subtract_datetime($lc);
+    return $self->render(json => {status => 'fail'}) if $delta->days < 1;
+  }
+
+  $account->mode($mode);
+  $account->user_count($user_count);
+  $account->last_changes('now()');
+  $account->save(changes_only => 1);
+
+  return $self->render(json => {status => 'ok'});
+
 }
 
-sub set_mode {
-    my $self = shift;
-    my $id = $self->param('id');
-    my $mode = $self->param('mode');
-
-    if($mode ne 'all' && $mode ne 'sale' && $mode ne 'rent') {
-        return $self->render(json => {status => 'unknown mode'});
-    }
-
-    my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $id, del_date => undef])->[0];
-    $account->mode($mode);
-    $account->save(changes_only => 1);
-
-    return $self->render(json => {status => 'ok'});
-}
-
-sub set_option {
-    my $self = shift;
-
-    return $self->render(json => {status => 'ok'});
-}
-
-sub get_option {
-    my $self = shift;
-
-    return $self->render(json => {status => 'ok',});
-}
 
 sub begin_restore {
     my $self = shift;
@@ -135,14 +116,14 @@ sub begin_restore {
 
     my $account = Rplus::Model::Account::Manager->get_objects(query => [email => $email, del_date => undef])->[0];
 
-    $account->reg_code(generate_code());
+    $account->reg_code(_generate_code());
     $account->save(changes_only => 1);
 
     my $subject = 'Восстановление доступа к кабинету RplusMgmt';
     my $message = 'Для восстановления доступа к личному кабинету перейдите по ссылке http://' . $self->config->{site_name} . '/api/account/confirm_restore?reg_code=' . $account->reg_code;
-    send_email($email, $subject, $message);
+    _send_email($email, $subject, $message, $self->config->{email});
 
-    log_event('password restoration asked', $account->email);
+    _log_event('password restoration asked', $account->id);
 
     return $self->render(json => {status => 'ok'});
 }
@@ -155,7 +136,7 @@ sub confirm_restore {
 
     $self->flash(reg_code => $reg_code);
 
-    log_event('password restoration confirmed', $account->email);
+    _log_event('password restoration confirmed', $account->id);
 
     return $self->redirect_to('/passwdrestore');
 }
@@ -168,7 +149,7 @@ sub restore {
     my $account = Rplus::Model::Account::Manager->get_objects(query => [reg_code => $reg_code, del_date => undef])->[0];
 
     $account->password($new_password);
-    $account->reg_code(generate_code());
+    $account->reg_code(_generate_code());
     $account->save(changes_only => 1);
 
     $self->session->{'user'} = {
@@ -178,7 +159,7 @@ sub restore {
 
     $self->flash(show_message => 1, title => 'RplusMgmt', message => '<p>Доступ к кабинету восстановлен</p>');
 
-    log_event('password restored', $account->email);
+    _log_event('password restored', $account->id);
 
     return $self->redirect_to('/main');
 }
@@ -196,7 +177,7 @@ sub passwdchange {
         $account->password($new_password);
         $account->save(changes_only => 1);
 
-        log_event('password changed', $account->email);
+        _log_event('password changed', $account->id);
 
         return $self->render(json => {status => 'ok'});
     }
@@ -222,7 +203,7 @@ sub create {
     $account->name($account_name);
     $account->email($email);
     $account->password($password);
-    $account->reg_code(generate_code());
+    $account->reg_code(_generate_code());
     $account->mode($offer_type);
     $account->location_id($location_id);
 
@@ -240,9 +221,9 @@ sub create {
 
     my $subject = 'Подтверждение регистрации RplusMgmt';
     my $message = 'Для подтверждения регистрации перейдите по ссылке http://' . $self->config->{site_name} . '/api/account/confirm?reg_code=' . $account->reg_code;
-    send_email($email, $subject, $message);
+    _send_email($email, $subject, $message, $self->config->{email});
 
-    log_event('account created', $email);
+    _log_event('account created', $account->id);
 
     return $self->render(json => {status => 'success', });
 }
@@ -263,14 +244,14 @@ sub confirm {
     }
 
     eval {
-        $account->reg_code(generate_code());
+        $account->reg_code(_generate_code());
         $account->save(changes_only => 1);
         1;
     } or do {
         return $self->render(json => {error => $@}, status => 500);
     };
 
-    log_event('registration confirmed', $account->email);
+    _log_event('registration confirmed', $account->id);
 
     $self->session->{'user'} = {
         id => $account->id,
@@ -296,14 +277,14 @@ sub confirm {
 
     my $res;
     if (($res = $tx->success) && ($res->json->{'status'} eq 'success')) {
-        log_event('instance created', $account->email);
+        _log_event('instance created', $account->id);
         $self->flash(
             show_message => 1,
             title => 'Регистрация ' . $account->email . ' подтверждена',
             message => 'Аккаунт активирован, добро пожаловать!',
         );
     } else {
-        log_event('failed to create instance', $account->email);
+        _log_event('failed to create instance', $account->id);
         $self->flash(
             show_message => 1,
             title => 'Регистрация ' . $account->email . ' подтверждена',

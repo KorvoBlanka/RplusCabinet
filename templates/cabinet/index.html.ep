@@ -137,25 +137,6 @@
       $("#paymentForm [name='OutSum']").val(wo);
     });
 
-    $( ".radio-mode" ).change(function(e) {
-        var new_mode = $(this).data('val');
-        $.ajax({
-          type: "POST",
-          url: "/api/account/set_mode",
-          data: {
-            id: <%= $self->session('user')->{'id'} %>,
-            mode: new_mode,
-        },
-          }).done(function (data, textStatus, jqXHR) {
-
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert('Нет связи с сервером, изменения не сохранены');
-          });
-        $(".writeoff"). html("" + calc_writeoff());
-        var wo = calc_writeoff() * get_period();
-        $("#paymentForm [name='OutSum']").val(wo);
-    });
-
     $('[data-action="choose-provider"]').click(function (e) {
       var out_summ = $("#paymentForm [name='OutSum']").val();
       if (!out_summ) {
@@ -255,59 +236,70 @@
       }
     );
 
-    $('[name="use-mediator-buffer"]').change(function(e) {
-      $( ".writeoff" ). html("" + calc_writeoff());
-
-      var opt = $('[name="use-mediator-buffer"]:input').is(':checked');
-      $.ajax({
-        type: "POST",
-        url: "/api/account/set_option",
-        data: {id: <%= $self->session('user')->{'id'} %>, name: 'use_mediators_buffer', value: opt},
-          }).done(function (data, textStatus, jqXHR) {
-
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert('Нет связи с сервером, изменения не сохранены');
-          });
-    });
-
-    $('[data-action="usr-count-up"]').click(function (e) {
+    $('[data-action="usr-count-down"]').click(function (e) {
       var uc = parseInt($( ".usr-count" ).html());
       if (uc > 1) {
         uc --;
         $( ".usr-count" ).html(uc);
         $( ".writeoff" ). html("" + calc_writeoff());
-        var wo = calc_writeoff() * get_period();
-        $("#paymentForm [name='OutSum']").val(wo);
+        var sg_summ = calc_writeoff() * get_period();
+        $("#paymentForm [name='OutSum']").val(sg_summ);
 
-        $.ajax({
-          type: "POST",
-          url: "/api/account/set_user_count",
-          data: {id: <%= $self->session('user')->{'id'} %>, user_count: uc},
-            }).done(function (data, textStatus, jqXHR) {
-
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-              alert('Нет связи с сервером, изменения не сохранены');
-            });
       }
     });
 
-    $('[data-action="usr-count-down"]').click(function (e) {
+    $('[data-action="usr-count-up"]').click(function (e) {
       var uc = parseInt($( ".usr-count" ).html());
       uc ++;
       $( ".usr-count" ).html(uc);
       $( ".writeoff" ). html("" + calc_writeoff());
-      var wo = calc_writeoff() * get_period();
-      $("#paymentForm [name='OutSum']").val(wo);
+      var sg_summ = calc_writeoff() * get_period();
+      $("#paymentForm [name='OutSum']").val(sg_summ);
+    });
 
+    $( ".radio-mode" ).change(function(e) {
+        $(".writeoff"). html("" + calc_writeoff());
+        var sg_summ = calc_writeoff() * get_period();
+        $("#paymentForm [name='OutSum']").val(sg_summ);
+    });
+
+    $('[data-action="save"]').click(function (e) {
+
+      var user_count = parseInt($( ".usr-count" ).html());
+      var new_mode = $(".radio-mode").data('val');
       $.ajax({
         type: "POST",
-        url: "/api/account/set_user_count",
-        data: {id: <%= $self->session('user')->{'id'} %>, user_count: uc},
-          }).done(function (data, textStatus, jqXHR) {
-
-          }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert('Нет связи с сервером, изменения не сохранены');
-          });
+        url: "/api/account/update",
+        data: {
+          id: <%= $self->session('user')->{'id'} %>,
+          mode: new_mode,
+          user_count: user_count
+      },
+        }).done(function (data, textStatus, jqXHR) {
+          if (data.status == 'ok') {
+            bootbox.dialog({message: 'Изменения сохранены',
+              title: "RplusMgmt",
+              buttons: {
+                main: {
+                  label: "Закрыть",
+                  className: "btn-primary",
+                }
+              }
+            });
+          } else {
+            bootbox.dialog({message: 'Изменения можно делать не чаще чем 1 раз в 24 часа',
+              title: "RplusMgmt",
+              buttons: {
+                main: {
+                  label: "Закрыть",
+                  className: "btn-primary",
+                }
+              }
+            });
+          }
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+          alert('Нет связи с сервером, изменения не сохранены');
+        });
 
     });
 
@@ -480,11 +472,15 @@
             </div>
             <div class="col-md-8 col-sm-8" style="margin-top: 5px;">
               <div class="btn-group">
-                <button type="button" class="btn btn-default btn-ucounter" data-action="usr-count-up"><i class="fa fa-angle-down"></i></button>
+                <button type="button" class="btn btn-default btn-ucounter" data-action="usr-count-down"><i class="fa fa-angle-down"></i></button>
                 <button type="button" class="btn btn-default btn-ucounter disabled usr-count"><%= $account->{'user_count'} %></button>
-                <button type="button" class="btn btn-default btn-ucounter" data-action="usr-count-down"><i class="fa fa-angle-up"></i></button>
+                <button type="button" class="btn btn-default btn-ucounter" data-action="usr-count-up"><i class="fa fa-angle-up"></i></button>
               </div>
             </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12">
+            <button class="btn blue" type="button" data-action="save">Сохранить</button>
           </div>
         </div>
       </div>
