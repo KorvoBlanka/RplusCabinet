@@ -10,8 +10,6 @@ use Data::Dumper;
 sub auth {
     my $self = shift;
 
-    say 'auth';
-
     return 1 if $self->session('user') && $self->session('user')->{'id'};
 
     $self->render(template => 'authentication/signin');

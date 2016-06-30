@@ -120,6 +120,7 @@
 % end
 
 % content_for javascript => begin
+% my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $self->session('user')->{'id'}, del_date => undef], with_objects => ['location'],)->[0];
 <script type="text/javascript">
   (function() {
     $(window).keydown(function (event) {
@@ -129,6 +130,12 @@
     });
 
     $(".writeoff"). html("" + calc_writeoff());
+
+
+    $( ".radio-period" ).change(function(e) {
+      var wo = calc_writeoff() * get_period();
+      $("#paymentForm [name='OutSum']").val(wo);
+    });
 
     $( ".radio-mode" ).change(function(e) {
         var new_mode = $(this).data('val');
@@ -145,6 +152,8 @@
             alert('Нет связи с сервером, изменения не сохранены');
           });
         $(".writeoff"). html("" + calc_writeoff());
+        var wo = calc_writeoff() * get_period();
+        $("#paymentForm [name='OutSum']").val(wo);
     });
 
     $('[data-action="choose-provider"]').click(function (e) {
@@ -246,13 +255,6 @@
       }
     );
 
-    function calc_writeoff () {
-      var uc = parseInt($( ".usr-count" ).html());
-      var mode = $('.radio-mode:checked').data('val');
-      var mul = mode == 'all' ? 2 : 1;
-      return 40 * mul + (uc - 1) * 20;
-    }
-
     $('[name="use-mediator-buffer"]').change(function(e) {
       $( ".writeoff" ). html("" + calc_writeoff());
 
@@ -274,6 +276,8 @@
         uc --;
         $( ".usr-count" ).html(uc);
         $( ".writeoff" ). html("" + calc_writeoff());
+        var wo = calc_writeoff() * get_period();
+        $("#paymentForm [name='OutSum']").val(wo);
 
         $.ajax({
           type: "POST",
@@ -292,18 +296,45 @@
       uc ++;
       $( ".usr-count" ).html(uc);
       $( ".writeoff" ). html("" + calc_writeoff());
+      var wo = calc_writeoff() * get_period();
+      $("#paymentForm [name='OutSum']").val(wo);
 
-        $.ajax({
-          type: "POST",
-          url: "/api/account/set_user_count",
-          data: {id: <%= $self->session('user')->{'id'} %>, user_count: uc},
-            }).done(function (data, textStatus, jqXHR) {
+      $.ajax({
+        type: "POST",
+        url: "/api/account/set_user_count",
+        data: {id: <%= $self->session('user')->{'id'} %>, user_count: uc},
+          }).done(function (data, textStatus, jqXHR) {
 
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-              alert('Нет связи с сервером, изменения не сохранены');
-            });
+          }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert('Нет связи с сервером, изменения не сохранены');
+          });
 
     });
+
+    var wo = calc_writeoff() * get_period();
+    $("#paymentForm [name='OutSum']").val(wo);
+
+    function calc_writeoff () {
+      var sale_price = <%= $self->config->{price}->{$account->location_id}->{sale} %>;
+      var rent_price = <%= $self->config->{price}->{$account->location_id}->{rent} %>;
+      var user_price = <%= $self->config->{price}->{$account->location_id}->{user} %>;
+
+      var uc = parseInt($( ".usr-count" ).html());
+      var mode = $('.radio-mode:checked').data('val');
+      if (mode == 'sale') {
+        return sale_price + (uc - 1) * user_price;
+      } else if (mode == 'rent') {
+        return rent_price + (uc - 1) * user_price;
+      } else {
+        return sale_price + rent_price + (uc - 1) * user_price;
+      }
+    }
+
+    function get_period () {
+      var p = parseInt($('.radio-period:checked').data('val'));
+      console.log(p);
+      return p;
+    }
 
     % if ($self->flash('show_message') == 1) {
       bootbox.dialog({message: '<%=$self->flash('message')%>',
@@ -319,7 +350,7 @@
   })();
 </script>
 % end
-
+% my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $self->session('user')->{'id'}, del_date => undef], with_objects => ['location'],)->[0];
 <form id="WalletonePaymentForm" target="_newtab" method="post" action="https://www.walletone.com/checkout/default.aspx" accept-charset="UTF-8">
   <input type="hidden" name="WMI_MERCHANT_ID" value="112664092580"/>
   <input type="hidden" name="WMI_PAYMENT_AMOUNT" value=""/>
@@ -330,8 +361,6 @@
   <input type="hidden" name="WMI_FAIL_URL" value=""/>
   <input type="hidden" name="WMI_SIGNATURE" value=""/>
 </form>
-
-% my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $self->session('user')->{'id'}, del_date => undef], with_objects => ['location'],)->[0];
 
 <div id="provider-options-bg">
   <div class="hidden" id="provider-options" style="">
@@ -475,15 +504,33 @@
             <p>Списание</p>
           </div>
           <div class="col-md-1 col-sm-1">
-                <p class="numbers"><%= $account->{'balance'} %></p>
-                <p class="numbers writeoff"></p>
+            <p class="numbers"><%= $account->{'balance'} %></p>
+            <p class="numbers writeoff"></p>
           </div>
           <div class="col-md-7 col-sm-7">
-                <p class="numbers">руб.</p>
-                <p class="numbers">руб. / день</p>
+            <p class="numbers">руб.</p>
+            <p class="numbers">руб. / день</p>
           </div>
           <div class="spacer-small">
           </div>
+
+          <div class="col-md-8 col-sm-8" style="margin-bottom: 15px;">
+            <div class="radio-list">
+              <label class="prog-option">
+                <input type="radio" class="radio-period" name="optionsPeriod" data-val="7" > Неделя
+              </label>
+              <label class="prog-option">
+                <input type="radio" class="radio-period" name="optionsPeriod" data-val="30" checked=""> Месяц
+              </label>
+              <label class="prog-option">
+                <input type="radio" class="radio-period" name="optionsPeriod" data-val="60" > 2 месяца
+              </label>
+              <label class="prog-option">
+                <input type="radio" class="radio-period" name="optionsPeriod" data-val="365" > Год
+              </label>
+            </div>
+          </div>
+
           <div class="col-md-8 col-sm-8">
             <form id="paymentForm" method="post" action="https://auth.robokassa.ru/Merchant/Index.aspx" target="_top">
               <input type="hidden" name="MrchLogin" value="rplusmgmt" />
@@ -491,7 +538,7 @@
               <input type="hidden" name="Desc" value="оплата подписки RplusMgmt" />
               <input type="hidden" name="SignatureValue" value="" />
               <div class="input-group cost_input">
-                <input type="text" class="form-control" name="OutSum" autocomplete="off" value="1200" placeholder="Сумма в рублях">
+                <input type="text" readonly class="form-control" name="OutSum" autocomplete="off" value="1200" placeholder="Сумма в рублях">
                 <span class="input-group-btn">
                   <button class="btn blue" type="button" data-action="choose-provider">ОПЛАТИТЬ</button>
                 </span>

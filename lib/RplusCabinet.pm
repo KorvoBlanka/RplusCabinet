@@ -11,7 +11,6 @@ sub startup {
   #
   $self->hook(before_routes => sub {
       my $c = shift;
-      say 'before_routes';
   });
 
   # Router
