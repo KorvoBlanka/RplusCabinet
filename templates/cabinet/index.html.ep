@@ -265,7 +265,7 @@
     $('[data-action="save"]').click(function (e) {
 
       var user_count = parseInt($( ".usr-count" ).html());
-      var new_mode = $(".radio-mode").data('val');
+      var new_mode = $(".radio-mode:checked").data('val');
       $.ajax({
         type: "POST",
         url: "/api/account/update",
