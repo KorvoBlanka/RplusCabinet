@@ -83,7 +83,6 @@
     #provider-options {
       position: fixed;
       width: 400px;
-      height: 200px;
       left: 50%;
       top: 50%;
       margin-left: -200px;
@@ -356,7 +355,7 @@
 
 <div id="provider-options-bg">
   <div class="hidden" id="provider-options" style="">
-    <div class="provider-option" data-action="pay-robocassa" style="">
+    <div class="provider-option hidden" data-action="pay-robocassa" style="">
       <img src="/assets/img/icons/robokassa_logo.png" style="min-width: 70%; width: 1px; height: auto;">
     </div>
     <div class="provider-option" data-action="pay-walletone" style="border-top: 0px;">
