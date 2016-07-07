@@ -258,14 +258,8 @@ sub confirm {
         login => $account->email,
     };
 
-    my $server_name;
-    if ($account->location_id == 1) {       # khv
-      $server_name = 'khv.rplusmgmt.com';
-    } elsif ($account->location_id == 2) {  # kms
-      $server_name = 'kms.rplusmgmt.com';
-    } elsif ($account->location_id == 3) {  # msk
-      $server_name = 'msk.rplusmgmt.com';
-    }
+    my $location = Rplus::Model::Location::Manager->get_objects(query => [id => $account->location_id])->[0];
+    my $server_name = $location->server_name;
     my $service_url = "http://$server_name/service/create_account";
 
     my $tx = $ua->get($service_url, form => {
