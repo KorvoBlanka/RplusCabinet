@@ -386,15 +386,7 @@
           </div>
           <div class="col-md-8 col-sm-8">
             <p><%= $account->{location}->{name} %></p>
-            % my $loc_str = '';
-            % if ($account->location_id == 1) {
-            %   $loc_str = 'khv';
-            % } elsif ($account->location_id == 2) {
-            %   $loc_str = 'kms';
-            % } elsif ($account->location_id == 3) {
-            %   $loc_str = 'msk';
-            % }
-            <p id="prog-adr"><a href="http://<%= $loc_str %>.rplusmgmt.com" target="_blank"><%= $loc_str %>.rplusmgmt.com</a></p>
+            <p id="prog-adr"><a href="http://<%= $account->{location}->{server_name} %>" target="_blank"><%= $account->{location}->{server_name} %></a></p>
             <p class="tip-description"><%= $account->name %></p>
             <p class="tip-description">manager</p>
             <p class="tip-description">12345</p>

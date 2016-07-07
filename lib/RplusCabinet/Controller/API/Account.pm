@@ -4,10 +4,9 @@ use Mojo::Base 'Mojolicious::Controller';
 
 use Rplus::DB;
 
-use Rplus::Model::Account;
 use Rplus::Model::Account::Manager;
-use Rplus::Model::Event;
 use Rplus::Model::Event::Manager;
+use Rplus::Model::Location::Manager;
 
 use JSON;
 use MIME::Lite;

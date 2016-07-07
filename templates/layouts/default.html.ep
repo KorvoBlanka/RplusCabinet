@@ -1,4 +1,3 @@
-% use Rplus::Model::Location;
 % use Rplus::Model::Location::Manager;
 
 <!DOCTYPE html>
