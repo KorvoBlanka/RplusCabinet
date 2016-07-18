@@ -120,6 +120,8 @@
 
 % content_for javascript => begin
 % my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $self->session('user')->{'id'}, del_date => undef], with_objects => ['location'],)->[0];
+% my $location = $account->location;
+% my $price_obj = from_json($location->price);
 <script type="text/javascript">
   (function() {
     $(window).keydown(function (event) {
@@ -306,24 +308,37 @@
     $("#paymentForm [name='OutSum']").val(wo);
 
     function calc_writeoff () {
-      var sale_price = <%= $self->config->{price}->{$account->location_id}->{sale} %>;
-      var rent_price = <%= $self->config->{price}->{$account->location_id}->{rent} %>;
-      var user_price = <%= $self->config->{price}->{$account->location_id}->{user} %>;
+
+      var sale_price = <%= $price_obj->{sale} %>;
+      var rent_price = <%= $price_obj->{rent} %>;
+      var user_price = <%= $price_obj->{user} %>;
+
+      var discount = 0;
+      % my $now = DateTime->now();
+      % if ($account->{discount} && (!$account->discount_end_date || $account->discount_end_date > $now)) {
+          discount = <%= $account->{discount} %>;
+      % }
 
       var uc = parseInt($( ".usr-count" ).html());
       var mode = $('.radio-mode:checked').data('val');
+      var wo = 0;
       if (mode == 'sale') {
-        return sale_price + (uc - 1) * user_price;
+        wo = sale_price + (uc - 1) * user_price;
       } else if (mode == 'rent') {
-        return rent_price + (uc - 1) * user_price;
+        wo = rent_price + (uc - 1) * user_price;
       } else {
-        return sale_price + rent_price + (uc - 1) * user_price;
+        wo = sale_price + rent_price + (uc - 1) * user_price;
       }
+
+      if (discount > 0) {
+        wo *= (100 - discount) / 100;
+      }
+
+      return wo;
     }
 
     function get_period () {
       var p = parseInt($('.radio-period:checked').data('val'));
-      console.log(p);
       return p;
     }
 
@@ -342,6 +357,9 @@
 </script>
 % end
 % my $account = Rplus::Model::Account::Manager->get_objects(query => [id => $self->session('user')->{'id'}, del_date => undef], with_objects => ['location'],)->[0];
+% my $location = $account->location;
+%
+
 <form id="WalletonePaymentForm" target="_newtab" method="post" action="https://www.walletone.com/checkout/default.aspx" accept-charset="UTF-8">
   <input type="hidden" name="WMI_MERCHANT_ID" value="112664092580"/>
   <input type="hidden" name="WMI_PAYMENT_AMOUNT" value=""/>
@@ -487,15 +505,25 @@
         </div>
         <div class="portlet-body">
           <div class="col-md-4 col-sm-4">
+            % my $now = DateTime->now();
             <p>Текущий баланс</p>
+            % if ($account->{discount} && (!$account->discount_end_date || $account->discount_end_date > $now)) {
+            <p>Скидка</p>
+            % }
             <p>Списание</p>
           </div>
           <div class="col-md-1 col-sm-1">
-            <p class="numbers"><%= $account->{'balance'} %></p>
+            <p class="numbers"><%= $account->{balance} %></p>
+            % if ($account->{discount} && (!$account->discount_end_date || $account->discount_end_date > $now)) {
+            <p class="numbers"><%= $account->{discount} %></p>
+            % }
             <p class="numbers writeoff"></p>
           </div>
           <div class="col-md-7 col-sm-7">
             <p class="numbers">руб.</p>
+            % if ($account->{discount} && (!$account->discount_end_date || $account->discount_end_date > $now)) {
+            <p class="numbers">%</p>
+            % }
             <p class="numbers">руб. / день</p>
           </div>
           <div class="spacer-small">

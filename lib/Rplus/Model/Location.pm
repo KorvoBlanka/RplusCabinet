@@ -8,14 +8,11 @@ __PACKAGE__->meta->setup(
     table   => 'locations',
 
     columns => [
-        id                => { type => 'integer', not_null => 1 },
-        name              => { type => 'varchar' },
-        city_guid         => { type => 'varchar', not_null => 1, remarks => 'гео id города' },
-        phone_prefix      => { type => 'varchar', not_null => 1 },
-        realty_buffer_url => { type => 'varchar', not_null => 1 },
-        add_date          => { type => 'timestamp with time zone', default => 'now()', not_null => 1 },
-        delete_date       => { type => 'timestamp with time zone' },
-        map               => { type => 'scalar', default => '{}', not_null => 1, remarks => 'координаты центра карты' },
+        id          => { type => 'integer', not_null => 1 },
+        name        => { type => 'varchar' },
+        server_name => { type => 'varchar', not_null => 1 },
+        add_date    => { type => 'timestamp with time zone', default => 'now()', not_null => 1 },
+        price       => { type => 'scalar', default => '{}', not_null => 1 },
     ],
 
     primary_key_columns => [ 'id' ],
