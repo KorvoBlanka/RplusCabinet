@@ -18,6 +18,10 @@ use DateTime::Format::Strptime;
 my $parser = DateTime::Format::Strptime->new(pattern => '%Y-%m-%d %H:%M:%S');
 my $ua = Mojo::UserAgent->new;
 
+sub _trim {
+    my $s = shift; $s =~ s/^\s+|\s+$//g; return $s
+}
+
 sub _log_event {
     my $text = shift;
     my $account = shift;
@@ -199,8 +203,10 @@ sub create {
     $account->balance(0);
     $account->user_count(1);
 
-    $account->name($account_name);
-    $account->email($email);
+    if ($account_name) {
+        $account->name(_trim($account_name));
+    }
+    $account->email(_trim($email));
     $account->password($password);
     $account->reg_code(_generate_code());
     $account->mode($offer_type);
