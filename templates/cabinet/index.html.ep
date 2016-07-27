@@ -559,7 +559,10 @@
                 </span>
               </div>
               <div style="margin-top: 15px;">
-                <a href="/aboutprogram?sc=7&n=1">Получить справку о расценках</a>
+                Оплачивая сервис вы соглашаетесь с <a href="assets/file/УСЛОВИЯ.odt">условиями</a>
+              </div>
+              <div style="margin-top: 15px;">
+                Получить справку о <a href="/aboutprogram?sc=7&n=1">расценках</a>
               </div>
             </form>
           </div>
