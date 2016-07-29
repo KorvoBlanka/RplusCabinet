@@ -7,6 +7,7 @@ use Rplus::DB;
 use Rplus::Model::Account::Manager;
 use Rplus::Model::Event::Manager;
 use Rplus::Model::Location::Manager;
+use Rplus::Model::Partner::Manager;
 
 use JSON;
 use MIME::Lite;
@@ -199,6 +200,8 @@ sub create {
     my $offer_type = $self->param('offer_type');
     my $location_id = $self->param('location_id');
 
+    my $partner_code = $self->param('partner_code');
+
     # Save
     $account->balance(0);
     $account->user_count(1);
@@ -211,6 +214,12 @@ sub create {
     $account->reg_code(_generate_code());
     $account->mode($offer_type);
     $account->location_id($location_id);
+
+    my $partner = Rplus::Model::Partner::Manager->get_objects(query => [code => $partner_code])->[0];
+    if ($partner) {
+        $account->partner_id($partner->id);
+        $account->balance($partner->balance_bonus);
+    }
 
     eval {
         $account->save(insert => 1);

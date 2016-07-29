@@ -24,6 +24,7 @@ __PACKAGE__->meta->setup(
         last_changes      => { type => 'timestamp' },
         discount          => { type => 'integer' },
         discount_end_date => { type => 'timestamp with time zone' },
+        partner_id        => { type => 'integer' },
     ],
 
     primary_key_columns => [ 'id' ],
